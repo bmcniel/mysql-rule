@@ -3,6 +3,8 @@ apply from: 'https://raw.githubusercontent.com/upside-services/upside-gradle/mas
 apply from: 'https://raw.githubusercontent.com/upside-services/upside-gradle/master/upside-autovalue.gradle'
 apply from: 'https://raw.githubusercontent.com/upside-services/upside-gradle/master/upside-jacoco.gradle'
 
+group = 'com.upside.test.mysql'
+
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.21'
     compile 'junit:junit:4.12'
