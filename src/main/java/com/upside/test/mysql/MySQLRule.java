@@ -22,7 +22,7 @@ public class MySQLRule extends ExternalResource {
 
     private Process mysqldProcess;
     private Path mysqlRootDirectory;
-    private Integer port = null;
+    private final int port;
     private final boolean debug;
 
     private final String dbName;
@@ -75,7 +75,12 @@ public class MySQLRule extends ExternalResource {
         this.dbUser = dbUser;
         this.dbPassword = dbPassword;
         this.debug = debug;
-        this.port = port;
+        if (port == null) {
+            this.port = SocketUtil.findFreePort();
+        }
+        else {
+            this.port = port;
+        }
     }
 
     /**
@@ -127,10 +132,6 @@ public class MySQLRule extends ExternalResource {
         this.mysqlRootDirectory = Files.createTempDirectory(
                 buildDataPrefix(),
                 PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwx---")));
-
-        if (this.port == null) {
-            this.port = SocketUtil.findFreePort();
-        }
 
         String binaryPath = new File(binaryRoot,"binary/bin/mysqld").getAbsolutePath();
         String clientBinaryPath = new File(binaryRoot,"binary/bin/mysql").getAbsolutePath();
