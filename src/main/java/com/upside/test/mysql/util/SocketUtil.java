@@ -26,7 +26,7 @@ public final class SocketUtil {
      * @return True if bound false if timeout waiting.
      */
     public static boolean waitForLocalSocketSocket(int port) {
-        return waitForLocalSocketSocket(port, 10);
+        return waitForLocalSocketSocket(port, 15);
     }
 
     /**
@@ -37,7 +37,7 @@ public final class SocketUtil {
     public static boolean waitForLocalSocketSocket(int port, int attempts) {
         int count = 0;
         try {
-            Thread.sleep(400);
+            Thread.sleep(100);
         }
         catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -48,7 +48,7 @@ public final class SocketUtil {
             }
             catch (ConnectException e) {
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(100);
                 }
                 catch (InterruptedException e1) {
                     throw new RuntimeException(e1);

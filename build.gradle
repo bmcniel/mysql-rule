@@ -5,18 +5,12 @@ apply from: 'https://raw.githubusercontent.com/upside-services/upside-gradle/mas
 
 group = 'com.upside.test.mysql'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    compile 'org.slf4j:slf4j-api:1.7.21'
     compile 'junit:junit:4.12'
     testCompile 'org.jdbi:jdbi:2.77'
     testCompile group: 'mysql', name: 'mysql-connector-java', version:'5.1.38'
     testCompile group: 'org.flywaydb', name: 'flyway-core', version:'3.2.1'
 }
-
 
 test {
     maxParallelForks=4

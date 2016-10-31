@@ -22,7 +22,7 @@ public class MySQLRule extends ExternalResource {
 
     private Process mysqldProcess;
     private Path mysqlRootDirectory;
-    private int port = -1;
+    private Integer port = null;
     private final boolean debug;
 
     private final String dbName;
@@ -30,10 +30,10 @@ public class MySQLRule extends ExternalResource {
     private final String dbPassword;
 
     /**
-     * Create a default instance of the rule with debug set to true.
+     * @return An instance of MySQLRule with default values and debug enabled.
      */
     public static MySQLRule debug() {
-        return new MySQLRule("service", "test", "test", true);
+        return new MySQLRule("service", "test", "test", true, null);
     }
 
     /**
@@ -41,9 +41,10 @@ public class MySQLRule extends ExternalResource {
      * DB Name: service
      * DB User: test
      * DB Password: test
+     * @return An initialized MysqlRule instance.
      */
     public static MySQLRule defaultRule() {
-        return new MySQLRule("service", "test", "test", false);
+        return new MySQLRule("service", "test", "test", false, null);
     }
 
     /**
@@ -52,43 +53,66 @@ public class MySQLRule extends ExternalResource {
      * @param dbUser The user to create during setup
      * @param dbPassword The password to assign to the given user.
      * @param debug If True pipes the mysql startup to the hosting JVM stderr and stdout.
+     * @param port The port to use for mysqld. If null a free port will be found at mysql start time.
+     * @return An initialized MysqlRule instance.
      */
-    public static MySQLRule rule(String dbName, String dbUser, String dbPassword, boolean debug) {
-        return new MySQLRule(dbName, dbUser, dbPassword, debug);
+    public static MySQLRule rule(String dbName, String dbUser, String dbPassword, boolean debug, int port) {
+        return new MySQLRule(dbName, dbUser, dbPassword, debug, port);
     }
     /**
      * Creates an instance of the rule with the provided parameters, set debug to false.
      * @param dbName The database name to initialize
      * @param dbUser The user to create during setup
      * @param dbPassword The password to assign to the given user.
+     * @return An initialized MysqlRule instance.
      */
     public static MySQLRule rule(String dbName, String dbUser, String dbPassword) {
-        return new MySQLRule(dbName, dbUser, dbPassword, false);
+        return new MySQLRule(dbName, dbUser, dbPassword, false, null);
     }
 
-    private MySQLRule(String dbName, String dbUser, String dbPassword, boolean debug) {
+    private MySQLRule(String dbName, String dbUser, String dbPassword, boolean debug, Integer port) {
         this.dbName = dbName;
         this.dbUser = dbUser;
         this.dbPassword = dbPassword;
         this.debug = debug;
+        this.port = port;
     }
 
+    /**
+     * @return The port to use for mysqld. Only valid after {@code after()} has run.
+     */
     public int getPort() {
         return this.port;
     }
 
+    /**
+     * @return The configured DB Name.
+     */
     public String getDbName() {
         return this.dbName;
     }
 
+    /**
+     * @return The configured DB user.
+     */
     public String getDbUser() {
         return this.dbUser;
     }
 
+    /**
+     * @return The configured DB password.
+     */
     public String getDbPassword() {
         return this.dbPassword;
     }
 
+    /**
+     * @return A jdbc connection string using the configured port and db name.
+     *
+     * Example:
+     *
+     * jdbc:mysql://localhost:11111/service
+     */
     public String getDbUrl() {
         return String.format("jdbc:mysql://localhost:%s/%s", this.port, this.dbName);
     }
@@ -104,7 +128,9 @@ public class MySQLRule extends ExternalResource {
                 buildDataPrefix(),
                 PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwx---")));
 
-        this.port = SocketUtil.findFreePort();
+        if (this.port == null) {
+            this.port = SocketUtil.findFreePort();
+        }
 
         String binaryPath = new File(binaryRoot,"binary/bin/mysqld").getAbsolutePath();
         String clientBinaryPath = new File(binaryRoot,"binary/bin/mysql").getAbsolutePath();
