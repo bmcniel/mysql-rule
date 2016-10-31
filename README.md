@@ -1,7 +1,7 @@
 MySQL Rule
 ==========
 
-This package provides a JUnit rule that starts and initialized a mysql instance. A small amount of setup on your
+This package provides a JUnit rule that starts and initializes a mysql instance. A small amount of setup on your
 target host is required by running `sudo bin/setup-host.sh /your/mysql/binary.tar.gz`.
 
 
@@ -32,9 +32,19 @@ import org.junit.Test;
  */
 public class TestDBMigration {
 
-    //Creates a new DB named: service with user: test password: test
     @Rule
-    public MySQLRule rule = MySQLRule.default();
+    public MySQLRule rule = MySQLRule.rule(
+        "my-test-db",
+        "my-test-user",
+        "my-test-user-password",
+        false, //No debug
+        11111, //Use port 11111 will fail if port not available.
+    );
+    
+    //Create rule with default settings:
+    //Creates a new DB named: service with user: test password: test and a dynamic port.
+    @Rule
+    public MySQLRule defaultConfig = MySQLRule.default(); 
 
     @Test
     public void testMysqlServerStarts() {
@@ -43,6 +53,13 @@ public class TestDBMigration {
                              this.rule.getDbUser(),
                              this.rule.getDbPassword());
         flyway.migrate();
+        
+        flyway = new Flyway();
+        flyway.setDataSource(this.defaultConfig.getDbUrl(),
+                             this.defaultConfig.getDbUser(),
+                             this.defaultConfig.getDbPassword());
+        flyway.migrate();
+ 
     }
 }
 ```
