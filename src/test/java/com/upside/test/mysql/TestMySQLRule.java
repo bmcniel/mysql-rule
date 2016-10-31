@@ -10,13 +10,13 @@ import org.junit.Test;
 public class TestMySQLRule {
 
     @Rule
-    public MySQLRule rule1 = new MySQLRule();
+    public MySQLRule rule1 = MySQLRule.defaultRule();
 
     @Rule
-    public MySQLRule rule2 = new MySQLRule();
+    public MySQLRule rule2 = MySQLRule.defaultRule();
 
     @Rule
-    public MySQLRule rule3 = new MySQLRule();
+    public MySQLRule rule3 = MySQLRule.defaultRule();
 
     @Test
     public void testMysqlServerStarts() {
