@@ -26,7 +26,7 @@ public final class SocketUtil {
      * @return True if bound false if timeout waiting.
      */
     public static boolean waitForLocalSocketSocket(int port) {
-        return waitForLocalSocketSocket(port, 15);
+        return waitForLocalSocketSocket(port, 100);
     }
 
     /**
