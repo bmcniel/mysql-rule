@@ -2,19 +2,23 @@ MySQL Rule
 ==========
 
 This package provides a JUnit rule that starts and initializes a mysql instance. A small amount of setup on your
-target host is required by running `sudo bin/setup-host.sh /your/mysql/binary.tar.gz`.
+target host is required.
 
 
 Getting started
 ===============
 
-1 Download your preferred mysql tar archive from http://www.mysql.com/downloads/.
+1 `cd /tmp && git clone git@github.com:upside-services/mysql-rule.git && cd mysql-rule`
 
-  - Some of the mysql packages have the actual binary nested in the downloaded archive. If so unpack that to access the binary. Example: `tar -xf mysql-5.7.15-osx10.11-x86_64.tar` produces: `mysql-5.7.15-osx10.11-x86_64.tar.gz` and `mysql-test-5.7.15-osx10.11-x86_64.tar.gz`. We want: `mysql-5.7.15-osx10.11-x86_64.tar.gz`
+2 Download your preferred mysql tar archive from http://www.mysql.com/downloads/.
+
+  * For OSX, Tom downloaded [5.6.34 OSX10.11-x86_64.tar.gz](http://dev.mysql.com/downloads/file/?id=465981) on 2016/11/02
+
+  * If you download a different binary distribution, be aware that some of the mysql packages have the actual binary nested in the downloaded archive. If so, unpack that to access the binary. Example: `tar -xf mysql-5.7.15-osx10.11-x86_64.tar` produces: `mysql-5.7.15-osx10.11-x86_64.tar.gz` and `mysql-test-5.7.15-osx10.11-x86_64.tar.gz`. We want: `mysql-5.7.15-osx10.11-x86_64.tar.gz`
   
-2 Run `sudo ./bin/setup-host.sh /path/to/mysql-5.7.15-osx10.11-x86_64.tar.gz`
+3 Run `sudo ./bin/setup-host.sh /path/to/mysql-5.7.15-osx10.11-x86_64.tar.gz`
 
-3 You should now have `/opt/mysql-rule/` with `binary` and `template` directories.
+4 You should now have `/opt/mysql-rule/` with `binary` and `template` directories.
 
 
 Example Test Code
