@@ -168,7 +168,8 @@ public class MySQLRule extends ExternalResource {
             final Process clientProcess =
                     new ProcessBuilder(
                             clientBinaryPath,
-                            String.format("--socket=%s", socketFile),
+                            String.format("--port=%s", this.port),
+                            "--protocol=TCP",
                             "--user=root",
                             "--password=")
                             .directory(this.mysqlRootDirectory.toFile())
