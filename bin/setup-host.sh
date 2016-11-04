@@ -25,10 +25,11 @@ fi
 base_dir=/opt/mysql-rule
 binary_dir=/opt/mysql-rule/binary
 template_dir=/opt/mysql-rule/template
+template_data_dir=${template_dir}/data
 mysqld=${binary_dir}/bin/mysqld
 
 echo "Creating directories: ${base_dir} ${template_dir} ..."
-mkdir -p ${template_dir}
+mkdir -p ${template_data_dir}
 
 pushd .
 
