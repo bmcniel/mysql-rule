@@ -12,7 +12,7 @@ Getting started
 
 2 Download your preferred mysql tar archive from http://www.mysql.com/downloads/.
 
-  * For OSX, Tom downloaded [mysql-5.7.16-osx10.11-x86_64.tar.gz](http://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.16-osx10.11-x86_64.tar.gz) on 2016/11/02
+  * Tested with mysql version 5.7.12. YMMV for other versions.
 
   * If you download a different binary distribution, be aware that some of the mysql packages have the actual binary nested in the downloaded archive. If so, unpack that to access the binary. Example: `tar -xf mysql-5.7.15-osx10.11-x86_64.tar` produces: `mysql-5.7.15-osx10.11-x86_64.tar.gz` and `mysql-test-5.7.15-osx10.11-x86_64.tar.gz`. We want: `mysql-5.7.15-osx10.11-x86_64.tar.gz`
   
