@@ -1,28 +1,23 @@
 package com.upside.test.mysql;
 
 import com.upside.test.mysql.binary.LocalFile;
-import com.upside.test.mysql.core.InitTemplateMySQLProcess;
-import com.upside.test.mysql.core.LocalhostMysqlProcess;
+import com.upside.test.mysql.core.InitViaTemplateMySQLProcess;
+import com.upside.test.mysql.core.LocalhostMySQLProcess;
 import com.upside.test.mysql.core.MySQLProcess;
-import com.upside.test.mysql.util.FileUtil;
-import com.upside.test.mysql.util.MySQLUtil;
 import com.upside.test.mysql.util.SocketUtil;
 import org.junit.rules.ExternalResource;
 
 import java.io.File;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Rule that starts a mysql instance.
  */
 public class MySQLRule extends ExternalResource {
 
-    private MysqlBinaryLoader loader = new LocalFile();
+    private final MysqlBinaryLoader loader;
 
     private MySQLProcess mysqldProcess;
     private Path mysqlRootDirectory;
@@ -37,7 +32,7 @@ public class MySQLRule extends ExternalResource {
      * @return An instance of MySQLRule with default values and debug enabled.
      */
     public static MySQLRule debug() {
-        return new MySQLRule("service", "test", "test", true, null);
+        return new MySQLRule("service", "test", "test", true, null, new LocalFile());
     }
 
     /**
@@ -48,7 +43,7 @@ public class MySQLRule extends ExternalResource {
      * @return An initialized MysqlRule instance.
      */
     public static MySQLRule defaultRule() {
-        return new MySQLRule("service", "test", "test", false, null);
+        return new MySQLRule("service", "test", "test", false, null, new LocalFile());
     }
 
     /**
@@ -60,8 +55,10 @@ public class MySQLRule extends ExternalResource {
      * @param port The port to use for mysqld. If null a free port will be found at mysql start time.
      * @return An initialized MysqlRule instance.
      */
-    public static MySQLRule rule(String dbName, String dbUser, String dbPassword, boolean debug, int port) {
-        return new MySQLRule(dbName, dbUser, dbPassword, debug, port);
+    public static MySQLRule rule(String dbName, String dbUser,
+                                 String dbPassword, boolean debug, int port,
+                                 MysqlBinaryLoader loader) {
+        return new MySQLRule(dbName, dbUser, dbPassword, debug, port, loader);
     }
     /**
      * Creates an instance of the rule with the provided parameters, set debug to false.
@@ -70,11 +67,12 @@ public class MySQLRule extends ExternalResource {
      * @param dbPassword The password to assign to the given user.
      * @return An initialized MysqlRule instance.
      */
-    public static MySQLRule rule(String dbName, String dbUser, String dbPassword) {
-        return new MySQLRule(dbName, dbUser, dbPassword, false, null);
+    public static MySQLRule rule(String dbName, String dbUser, String dbPassword, MysqlBinaryLoader loader) {
+        return new MySQLRule(dbName, dbUser, dbPassword, false, null, loader);
     }
 
-    private MySQLRule(String dbName, String dbUser, String dbPassword, boolean debug, Integer port) {
+    private MySQLRule(String dbName, String dbUser, String dbPassword,
+                      boolean debug, Integer port, MysqlBinaryLoader loader) {
         this.dbName = dbName;
         this.dbUser = dbUser;
         this.dbPassword = dbPassword;
@@ -85,6 +83,7 @@ public class MySQLRule extends ExternalResource {
         else {
             this.port = port;
         }
+        this.loader = loader;
     }
 
     /**
@@ -135,8 +134,8 @@ public class MySQLRule extends ExternalResource {
                 PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwx---")));
         Path templatePath = new File(binaryRoot, "template").toPath();
         try {
-            this.mysqldProcess = new InitTemplateMySQLProcess(
-                    new LocalhostMysqlProcess(
+            this.mysqldProcess = new InitViaTemplateMySQLProcess(
+                    new LocalhostMySQLProcess(
                             this.mysqlRootDirectory,
                             binaryRoot,
                             this.port,

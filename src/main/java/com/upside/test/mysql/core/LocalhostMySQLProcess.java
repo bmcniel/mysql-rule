@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  *
  * Requries the base directory to have been initialized via mysqld --initialize ...
  */
-public class LocalhostMysqlProcess implements MySQLProcess {
+public class LocalhostMySQLProcess implements MySQLProcess {
     private final Path rootDirectory;
     private final String adminPath;
     private final String clientBinaryPath;
@@ -26,7 +26,7 @@ public class LocalhostMysqlProcess implements MySQLProcess {
     private final ProcessBuilder processBuilder;
     private Process process;
 
-    public LocalhostMysqlProcess(Path mysqlRoot, File binaryRoot, int port, boolean debug) {
+    public LocalhostMySQLProcess(Path mysqlRoot, File binaryRoot, int port, boolean debug) {
         this.rootDirectory = mysqlRoot;
 
         this.binaryPath = new File(binaryRoot, "binary/bin/mysqld").getAbsolutePath();
