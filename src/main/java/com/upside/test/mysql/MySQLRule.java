@@ -40,6 +40,9 @@ public class MySQLRule extends ExternalResource {
      * DB Name: service
      * DB User: test
      * DB Password: test
+     *
+     * Uses the default mysql binary loader which expects mysql to be installed at /opt/mysql-rule/binary/
+     *
      * @return An initialized MysqlRule instance.
      */
     public static MySQLRule defaultRule() {
@@ -48,11 +51,13 @@ public class MySQLRule extends ExternalResource {
 
     /**
      * Creates an instance of the rule with the provided parameters.
+     *
      * @param dbName The database name to initialize
      * @param dbUser The user to create during setup
      * @param dbPassword The password to assign to the given user.
      * @param debug If True pipes the mysql startup to the hosting JVM stderr and stdout.
      * @param port The port to use for mysqld. If null a free port will be found at mysql start time.
+     * @param loader An implementation of {@link MysqlBinaryLoader} that returns the location of a mysql install.
      * @return An initialized MysqlRule instance.
      */
     public static MySQLRule rule(String dbName, String dbUser,
@@ -62,9 +67,11 @@ public class MySQLRule extends ExternalResource {
     }
     /**
      * Creates an instance of the rule with the provided parameters, set debug to false.
+     *
      * @param dbName The database name to initialize
      * @param dbUser The user to create during setup
      * @param dbPassword The password to assign to the given user.
+     * @param loader An implementation of {@link MysqlBinaryLoader} that returns the location of a mysql install.
      * @return An initialized MysqlRule instance.
      */
     public static MySQLRule rule(String dbName, String dbUser, String dbPassword, MysqlBinaryLoader loader) {
@@ -132,7 +139,9 @@ public class MySQLRule extends ExternalResource {
         this.mysqlRootDirectory = Files.createTempDirectory(
                 buildDataPrefix(),
                 PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwx---")));
-        Path templatePath = new File(binaryRoot, "template").toPath();
+
+        Path templatePath = new File("/opt/mysql-rule/template").toPath();
+
         try {
             this.mysqldProcess = new InitViaTemplateMySQLProcess(
                     new LocalhostMySQLProcess(

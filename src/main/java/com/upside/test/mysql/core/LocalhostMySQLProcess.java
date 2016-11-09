@@ -29,9 +29,9 @@ public class LocalhostMySQLProcess implements MySQLProcess {
     public LocalhostMySQLProcess(Path mysqlRoot, File binaryRoot, int port, boolean debug) {
         this.rootDirectory = mysqlRoot;
 
-        this.binaryPath = new File(binaryRoot, "binary/bin/mysqld").getAbsolutePath();
-        this.clientBinaryPath = new File(binaryRoot, "binary/bin/mysql").getAbsolutePath();
-        this.adminPath = new File(binaryRoot, "binary/bin/mysqladmin").getAbsolutePath();
+        this.binaryPath = new File(binaryRoot, "bin/mysqld").getAbsolutePath();
+        this.clientBinaryPath = new File(binaryRoot, "bin/mysql").getAbsolutePath();
+        this.adminPath = new File(binaryRoot, "bin/mysqladmin").getAbsolutePath();
 
         this.port = port;
 

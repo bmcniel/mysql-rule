@@ -42,7 +42,8 @@ public class TestDBMigration {
         "my-test-user",
         "my-test-user-password",
         false, //No debug
-        11111, //Use port 11111 will fail if port not available.
+        11111, //Use port 11111, will fail if port not available.
+        new LocalFile() //Loads the mysql binary install from /opt/mysql-rule/binary
     );
     
     //Create rule with default settings:

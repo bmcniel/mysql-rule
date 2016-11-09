@@ -11,7 +11,7 @@ import java.nio.file.attribute.BasicFileAttributes;
  * Wrappers for file operations.
  */
 public final class FileUtil {
-    private FileUtil(){}
+    private FileUtil() {}
 
     public static void copyDirectory(final Path sourcePath, final Path targetPath) {
         try {

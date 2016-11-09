@@ -11,6 +11,9 @@ import java.nio.file.Path;
  *
  * Delegates the bits of starting an actual mysqld to another implementation.
  *
+ * Requries that an initialized mysqld data directory be located at: /opt/mysql-rule/template.
+ * How to do this is covered in the attached setup script.
+ *
  * Probably don't want to do this for a production mysql :).
  */
 public class InitViaTemplateMySQLProcess implements MySQLProcess {

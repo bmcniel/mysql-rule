@@ -11,7 +11,7 @@ import java.util.Optional;
  */
 public class LocalFile implements MysqlBinaryLoader {
 
-    public static final String BINARY_SOURCE = "/opt/mysql-rule/";
+    public static final String BINARY_SOURCE = "/opt/mysql-rule/binary";
 
     @Override
     public Optional<File> load() {
