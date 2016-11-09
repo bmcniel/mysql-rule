@@ -6,7 +6,7 @@ target host is required.
 
 
 Getting started
-===============
+---------------
 
 1 `cd /tmp && git clone git@github.com:upside-services/mysql-rule.git && cd mysql-rule`
 
@@ -22,7 +22,7 @@ Getting started
 
 
 Example Test Code
-=================
+-----------------
 
 ```
 package com.upside.test.mysql;
@@ -68,3 +68,23 @@ public class TestDBMigration {
     }
 }
 ```
+
+
+Tests
+-----
+
+1. Run Getting Started
+2. ./gradlew test
+
+
+OS Support
+----------
+
+1. Amazon Linux (likely all Linux variants, just not tested).
+2. OS X
+
+
+TODO
+----
+
+1. Deploy to OSS artifact repo
