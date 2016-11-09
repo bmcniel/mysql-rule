@@ -70,21 +70,7 @@ public class LocalhostMySQLProcess implements MySQLProcess {
         ProcessUtil.waitFor(clientProcess);
     }
 
-    /**
-     * Attempts to start the mysqld process.
-     *
-     * @return The process instance created
-     */
-    @Override
-    public Process start() {
-        if (this.process != null) {
-            throw new IllegalStateException("Unable to start process. Already started.");
-        }
-        this.process = ProcessUtil.startBuilder(this.processBuilder);
-        return this.process;
-    }
-
-    /**
+   /**
      * Attempts to start the mysql process then wait for it to respond to mysqladmin ping for ~20 seconds.
      *
      * @return The process instance created.
@@ -124,5 +110,13 @@ public class LocalhostMySQLProcess implements MySQLProcess {
                     .redirectOutput(ProcessBuilder.Redirect.INHERIT);
         }
         return processBuilder;
+    }
+
+    private Process start() {
+        if (this.process != null) {
+            throw new IllegalStateException("Unable to start process. Already started.");
+        }
+        this.process = ProcessUtil.startBuilder(this.processBuilder);
+        return this.process;
     }
 }

@@ -33,12 +33,6 @@ public class InitViaTemplateMySQLProcess implements MySQLProcess {
     }
 
     @Override
-    public Process start() {
-        this.copyTemplate();
-        return this.delegate.start();
-    }
-
-    @Override
     public Process startAndWait() {
         this.copyTemplate();
         return this.delegate.startAndWait();
