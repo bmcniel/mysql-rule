@@ -129,7 +129,7 @@ public class MySQLRule extends ExternalResource {
      * jdbc:mysql://localhost:11111/service
      */
     public String getDbUrl() {
-        return String.format("jdbc:mysql://localhost:%s/%s", this.port, this.dbName);
+        return String.format("jdbc:mysql://localhost:%s/%s?autoReconnect=true&useSSL=false", this.port, this.dbName);
     }
 
     protected void before() throws Throwable {
