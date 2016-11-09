@@ -1,6 +1,9 @@
 package com.upside.test.mysql;
 
 import com.upside.test.mysql.binary.LocalFile;
+import com.upside.test.mysql.core.InitTemplateMySQLProcess;
+import com.upside.test.mysql.core.LocalhostMysqlProcess;
+import com.upside.test.mysql.core.MySQLProcess;
 import com.upside.test.mysql.util.FileUtil;
 import com.upside.test.mysql.util.MySQLUtil;
 import com.upside.test.mysql.util.SocketUtil;
@@ -21,7 +24,7 @@ public class MySQLRule extends ExternalResource {
 
     private MysqlBinaryLoader loader = new LocalFile();
 
-    private Process mysqldProcess;
+    private MySQLProcess mysqldProcess;
     private Path mysqlRootDirectory;
     private final int port;
     private final boolean debug;
@@ -124,70 +127,30 @@ public class MySQLRule extends ExternalResource {
     }
 
     protected void before() throws Throwable {
-
         File binaryRoot= loader.load()
                 .orElseThrow(() -> new RuntimeException("Unable to load mysql binary."));
-
-        //setup the root directories for this mysql instance
 
         this.mysqlRootDirectory = Files.createTempDirectory(
                 buildDataPrefix(),
                 PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwx---")));
-
-        String binaryPath = new File(binaryRoot,"binary/bin/mysqld").getAbsolutePath();
-        String clientBinaryPath = new File(binaryRoot,"binary/bin/mysql").getAbsolutePath();
-        String adminPath = new File(binaryRoot,"binary/bin/mysqladmin").getAbsolutePath();
-
-
-        String basePath = this.mysqlRootDirectory.toFile().getAbsolutePath();
-        String dataPath = new File(this.mysqlRootDirectory.toFile(), "data").getAbsolutePath();
-        String socketFile = new File(this.mysqlRootDirectory.toFile(), "socket").getAbsolutePath();
-
         Path templatePath = new File(binaryRoot, "template").toPath();
-
-        if (templatePath.toFile().exists()) {
-            FileUtil.copyDirectory(templatePath, this.mysqlRootDirectory);
-        }
-        else {
-            throw new RuntimeException(
-                    String.format("Unable to find template directory: %s", templatePath.toAbsolutePath()));
-        }
-
         try {
-            this.mysqldProcess = enableDebug(new ProcessBuilder(
-                    binaryPath,
-                    "--bind-address=localhost",
-                    String.format("--basedir=%s", basePath),
-                    String.format("--port=%s", this.port),
-                    String.format("--socket=%s", socketFile),
-                    String.format("--datadir=%s", dataPath))
-                    .directory(this.mysqlRootDirectory.toFile()))
-                    .start();
+            this.mysqldProcess = new InitTemplateMySQLProcess(
+                    new LocalhostMysqlProcess(
+                            this.mysqlRootDirectory,
+                            binaryRoot,
+                            this.port,
+                            this.debug),
+                    this.mysqlRootDirectory,
+                    templatePath);
 
-            if (!MySQLUtil.waitForMySQLToStart(adminPath, this.port)) {
-               throw new RuntimeException("Server failed to start in time.");
-            }
+            this.mysqldProcess.startAndWait();
 
-            final Process clientProcess =
-                    new ProcessBuilder(
-                            clientBinaryPath,
-                            String.format("--port=%s", this.port),
-                            "--protocol=TCP",
-                            "--user=root",
-                            "--password=")
-                            .directory(this.mysqlRootDirectory.toFile())
-                            .start();
-
-            final PrintWriter writer = new PrintWriter(
-                    new OutputStreamWriter(
-                            clientProcess.getOutputStream()));
-
-            writer.println(String.format("CREATE DATABASE %s;", this.dbName));
-            writer.println(String.format("CREATE USER '%s'@'localhost' IDENTIFIED BY '%s';", this.dbUser, this.dbPassword));
-            writer.println(String.format("GRANT ALL ON %s.* TO '%s'@'localhost';", this.dbName, this.dbUser));
-            //Closing this writer closes the mysql client by ending the input stream.
-            writer.close();
-            clientProcess.waitFor(5, TimeUnit.SECONDS);
+            this.mysqldProcess.sendClientCommands(
+                    String.format("CREATE DATABASE %s;", this.dbName),
+                    String.format("CREATE USER '%s'@'localhost' IDENTIFIED BY '%s';", this.dbUser, this.dbPassword),
+                    String.format("GRANT ALL ON %s.* TO '%s'@'localhost';", this.dbName, this.dbUser)
+            );
         }
         catch (Exception e) {
             after();
@@ -195,25 +158,8 @@ public class MySQLRule extends ExternalResource {
         }
     }
 
-    /**
-     */
     protected void after() {
-        this.mysqldProcess.destroy();
-        try {
-            this.mysqldProcess.waitFor(5, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException e) {
-            //as long as it died
-        }
-        FileUtil.deleteDirectory(this.mysqlRootDirectory);
-    }
-
-    private ProcessBuilder enableDebug(ProcessBuilder processBuilder) {
-         if (this.debug) {
-            processBuilder = processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
-                    .redirectOutput(ProcessBuilder.Redirect.INHERIT);
-        }
-        return processBuilder;
+        this.mysqldProcess.stopAndCleanup();
     }
 
     private String buildDataPrefix() {
