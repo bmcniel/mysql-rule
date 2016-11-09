@@ -2,6 +2,7 @@ package com.upside.test.mysql;
 
 import com.upside.test.mysql.binary.LocalFile;
 import com.upside.test.mysql.util.FileUtil;
+import com.upside.test.mysql.util.MySQLUtil;
 import com.upside.test.mysql.util.SocketUtil;
 import org.junit.rules.ExternalResource;
 
@@ -135,6 +136,7 @@ public class MySQLRule extends ExternalResource {
 
         String binaryPath = new File(binaryRoot,"binary/bin/mysqld").getAbsolutePath();
         String clientBinaryPath = new File(binaryRoot,"binary/bin/mysql").getAbsolutePath();
+        String adminPath = new File(binaryRoot,"binary/bin/mysqladmin").getAbsolutePath();
 
 
         String basePath = this.mysqlRootDirectory.toFile().getAbsolutePath();
@@ -154,6 +156,7 @@ public class MySQLRule extends ExternalResource {
         try {
             this.mysqldProcess = enableDebug(new ProcessBuilder(
                     binaryPath,
+                    "--bind-address=localhost",
                     String.format("--basedir=%s", basePath),
                     String.format("--port=%s", this.port),
                     String.format("--socket=%s", socketFile),
@@ -161,7 +164,7 @@ public class MySQLRule extends ExternalResource {
                     .directory(this.mysqlRootDirectory.toFile()))
                     .start();
 
-            if (!SocketUtil.waitForLocalSocketSocket(this.port)) {
+            if (!MySQLUtil.waitForMySQLToStart(adminPath, this.port)) {
                throw new RuntimeException("Server failed to start in time.");
             }
 
