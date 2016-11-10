@@ -4,6 +4,7 @@ import com.upside.test.mysql.MySQLRule;
 
 import javax.security.auth.login.AccountException;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by bsiemon on 11/9/16.
@@ -30,9 +31,13 @@ public final class MySQLUtil {
                      "--password=",
                      String.format("--port=%s", port))
                     .start();
-            int returnCode = pingProcess.waitFor();
 
-            return returnCode == 0;
+            if (!pingProcess.waitFor(1, TimeUnit.SECONDS)) {
+                pingProcess.destroy();
+                return false;
+            }
+
+            return pingProcess.exitValue() == 0;
         }
         catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);

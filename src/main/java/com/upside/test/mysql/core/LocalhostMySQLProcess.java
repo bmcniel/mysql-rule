@@ -15,6 +15,11 @@ import java.util.concurrent.TimeUnit;
  * Abstracts the mechanics of starting a mysql daemon.
  *
  * Requries the base directory to have been initialized via mysqld --initialize ...
+ *
+ * Notes about how mysqld is started:
+ *
+ * 1. Binds only to localhost.
+ * 2. Uses default timezone of UTC.
  */
 public class LocalhostMySQLProcess implements MySQLProcess {
     private final Path rootDirectory;
@@ -44,6 +49,7 @@ public class LocalhostMySQLProcess implements MySQLProcess {
                 "--bind-address=localhost",
                 String.format("--basedir=%s", basePath),
                 String.format("--port=%s", port),
+                "--default-time-zone=+00:00",
                 String.format("--socket=%s", socketFile),
                 String.format("--datadir=%s", dataPath))
                 .directory(mysqlRoot.toFile()), debug);
@@ -117,6 +123,13 @@ public class LocalhostMySQLProcess implements MySQLProcess {
             throw new IllegalStateException("Unable to start process. Already started.");
         }
         this.process = ProcessUtil.startBuilder(this.processBuilder);
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                process.destroyForcibly();
+            }
+        });
+
         return this.process;
     }
 }
