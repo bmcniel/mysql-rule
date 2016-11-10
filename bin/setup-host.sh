@@ -43,7 +43,7 @@ ln -s mysql-* ${binary_dir}
 
 echo "Initializing mysql template in: ${template_dir} ..."
 ${mysqld} --initialize-insecure --basedir=${template_dir} \
- --datadir=${template_data_dir}
+ --datadir=${template_data_dir} --default-time-zone='+00:00'
 chmod -R 555 ${binary_dir}
 chmod -R 777 ${template_dir}
 
